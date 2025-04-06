@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AR.js GPS Demo</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar-nft.js"></script>
+    <style>
+      #ios-btn {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 999;
+        padding: 10px;
+        background: white;
+        border: 1px solid black;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body style="margin: 0; overflow: hidden">
+    <button id="ios-btn" onclick="enableIOS()">Habilitar sensores iOS</button>
+
+    <a-scene
+      vr-mode-ui="enabled: false"
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false; gpsMinAccuracy: 100"
+    >
+      <a-camera gps-camera rotation-reader></a-camera>
+
+      <a-entity
+        gps-entity-place="latitude: 38.869715; longitude: -1.093669"
+        look-at="[gps-camera]"
+        scale="20 20 20"
+      >
+        <a-text
+          value="¡Aquí estás!"
+          align="center"
+          color="red"
+          look-at="[gps-camera]"
+        ></a-text>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      function enableIOS() {
+        if (typeof DeviceOrientationEvent.requestPermission === "function") {
+          DeviceOrientationEvent.requestPermission()
+            .then((response) => {
+              if (response === "granted") {
+                window.addEventListener("deviceorientation", () => {}, true);
+              }
+            })
+            .catch(console.error);
+        }
+      }
+
+      window.addEventListener("gps-camera-update-position", (e) => {
+        console.log("Ubicación activa:", e.detail.position);
+      });
+    </script>
+  </body>
+</html>
